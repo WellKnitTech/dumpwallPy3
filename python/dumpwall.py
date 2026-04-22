@@ -1,5 +1,7 @@
-#!/usr/bin/python
-import base64, urlparse, sys
+#!/usr/bin/env python3
+import base64
+import sys
+from urllib.parse import parse_qsl
 from optparse import OptionParser
 
 class Container(object):
@@ -80,7 +82,7 @@ class Interfaces(Container):
     
     def parse(self,_key,_value):
       number = _key.split("_")[len(_key.split("_"))-1]
-      for key, value in self.map.iteritems():
+      for key, value in self.map.items():
         if _key.startswith(key):
           if value == 'ifacetype':
             _value = self.ifacetype[_value];
@@ -105,7 +107,7 @@ class DHCPs(Container):
     
     def parse(self,_key,_value):
       number = _key.split("_")[len(_key.split("_"))-1]
-      for key, value in self.map.iteritems():
+      for key, value in self.map.items():
         if _key.startswith(key):
           if value == 'active':
             _value = True if (_value == "on") else False 
@@ -129,7 +131,7 @@ class DHCPStatic(Container):
     
     def parse(self,_key,_value):
       number = _key.split("_")[len(_key.split("_"))-1]
-      for key, value in self.map.iteritems():
+      for key, value in self.map.items():
         if _key.startswith(key):
           if value.startswith("macaddress"):
             _value = '-'.join(a+b for a,b in zip(_value[::2], _value[1::2]))
@@ -159,7 +161,7 @@ class NATs(Container):
     
     def parse(self,_key,_value):
       number = _key.split("_")[len(_key.split("_"))-1]
-      for key, value in self.map.iteritems():
+      for key, value in self.map.items():
         if _key.startswith(key):          
           if value == "enabled": _value = (True if _value == "1" else False)
         
@@ -180,12 +182,12 @@ parser.add_option("-v", "--dumpplus", dest="dumpapaplus", action="store_true", d
 
           
 if not options.file:
-  print "Please specify a valid configuration file"
+  print("Please specify a valid configuration file")
   sys.exit(1)
           
 with open(options.file, "rb") as infile:
-  decoded = base64.b64decode(infile.read())
-  c = urlparse.parse_qsl(decoded)
+  decoded = base64.b64decode(infile.read()).decode("utf-8")
+  c = parse_qsl(decoded)
   
 oldpercent = 0
 for i,v in enumerate(c):
@@ -193,12 +195,12 @@ for i,v in enumerate(c):
   value = v[1]
 
   if options.dumpapa:
-    print "%s = %s" % (key,value)
+    print("%s = %s" % (key,value))
     continue
 
   percent = int((float(i+1)/len(c))*100);
   if oldpercent != percent:
-    print "parsing line %d/%d %3d%% [%-100s]\r" % (i+1,len(c),percent,"".rjust(percent,"=")),
+    print("parsing line %d/%d %3d%% [%-100s]\r" % (i+1,len(c),percent,"".rjust(percent,"=")), end="")
   oldpercent = percent
   sys.stdout.flush()
   
@@ -207,56 +209,56 @@ for i,v in enumerate(c):
   if dhcpstatic.parse(key,value): continue
   if nats.parse(key,value): continue
   
-print "\n"
+print("\n")
 for i,ob in enumerate(ifs.list()):
   #print "%-2s | %-15s | %-10s" % (ob.id,ob.name,ob.ipaddress)
   if options.dumpapaplus:
-    print ob
+    print(ob)
   else:
-    print "interface id '%s' name '%s' type '%s'" % (ob.id,ob.name,ob.ifacetype),
-    if (int(ob.vlanid) > 0): print "vlan '%s'" % (ob.vlanid),
+    print("interface id '%s' name '%s' type '%s'" % (ob.id,ob.name,ob.ifacetype), end=" ")
+    if (int(ob.vlanid) > 0): print("vlan '%s'" % (ob.vlanid), end=" ")
     
-    if (int(ob.portshieldwith) > -1): print "portshield with '%s'" % (ifs.getById(ob.portshieldwith).name),
+    if (int(ob.portshieldwith) > -1): print("portshield with '%s'" % (ifs.getById(ob.portshieldwith).name), end=" ")
   
-    print ""
+    print("")
     
 for i,ob in enumerate(dhcps.list()):
   if options.dumpapaplus:
-    print ob
+    print(ob)
   else:
     if ob.active == False:
       continue
     
-    print "dhcp range '%s-%s' netmask '%s' gateway '%s' dns" % (ob.start,ob.stop,ob.netmask,ob.gateway),
-    if (ob.dns1): print "'%s'" % (ob.dns1),
-    if (ob.dns2): print ",'%s'" % (ob.dns2),
-    if (ob.dns3): print ",'%s'" % (ob.dns3),
+    print("dhcp range '%s-%s' netmask '%s' gateway '%s' dns" % (ob.start,ob.stop,ob.netmask,ob.gateway), end=" ")
+    if (ob.dns1): print("'%s'" % (ob.dns1), end=" ")
+    if (ob.dns2): print(",'%s'" % (ob.dns2), end=" ")
+    if (ob.dns3): print(",'%s'" % (ob.dns3), end=" ")
   
-    print ""
+    print("")
 
 for i,ob in enumerate(dhcpstatic.list()):
   if options.dumpapaplus:
-    print ob
+    print(ob)
   else:
     
-    print "dhcp static name '%s' mac-address '%s' ip '%s' netmask '%s' gateway '%s' dns" % (ob.name,ob.macaddress,ob.ipaddress,ob.netmask,ob.gateway),
-    if (ob.dns1): print "'%s'" % (ob.dns1),
-    if (ob.dns2): print ",'%s'" % (ob.dns2),
-    if (ob.dns3): print ",'%s'" % (ob.dns3),
+    print("dhcp static name '%s' mac-address '%s' ip '%s' netmask '%s' gateway '%s' dns" % (ob.name,ob.macaddress,ob.ipaddress,ob.netmask,ob.gateway), end=" ")
+    if (ob.dns1): print("'%s'" % (ob.dns1), end=" ")
+    if (ob.dns2): print(",'%s'" % (ob.dns2), end=" ")
+    if (ob.dns3): print(",'%s'" % (ob.dns3), end=" ")
   
-    print ""
+    print("")
     
     
 for i,ob in enumerate(nats.list()):
   if options.dumpapaplus:
-    print ob
+    print(ob)
   else:
     if ob.enabled == False: continue
   
-    print "nat ifIn '%s' ifOut '%s'" % (ifs.getByIfNumber(ob.in_iface).name if (ob.in_iface != "-1") else "Any",ifs.getByIfNumber(ob.out_iface).name if (ob.out_iface != "-1") else "Any"),
-    print "%s" % (ob.in_iface), 
-    print "from '%s'" % (ob.src_orig if (ob.src_orig) else "Any"),
-    print "to '%s'" % (ob.dst_orig if (ob.dst_orig) else "Any"),
-    print "becomes from '%s'" % (ob.src_nat if (ob.src_nat) else "Original"),
-    print "to '%s'" % (ob.dst_nat if (ob.dst_nat) else "Original"),
-    print ""
+    print("nat ifIn '%s' ifOut '%s'" % (ifs.getByIfNumber(ob.in_iface).name if (ob.in_iface != "-1") else "Any",ifs.getByIfNumber(ob.out_iface).name if (ob.out_iface != "-1") else "Any"), end=" ")
+    print("%s" % (ob.in_iface), end=" ")
+    print("from '%s'" % (ob.src_orig if (ob.src_orig) else "Any"), end=" ")
+    print("to '%s'" % (ob.dst_orig if (ob.dst_orig) else "Any"), end=" ")
+    print("becomes from '%s'" % (ob.src_nat if (ob.src_nat) else "Original"), end=" ")
+    print("to '%s'" % (ob.dst_nat if (ob.dst_nat) else "Original"), end=" ")
+    print("")
