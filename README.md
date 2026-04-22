@@ -6,8 +6,22 @@ This dumpwall script will dump the configuration export file to a readable forma
 
 ## Current supported commands
 
+## Requirements
+
+- Python 3 (the script is now Python 3 only)
+
+## Usage
+
+Run the parser with Python 3 and an exported `.exp` configuration file:
+
+```bash
+python3 python/dumpwall.py -i sonicwall-TZ_210-5_9_0_4-127o.exp
 ```
-dumpwall.py -i sonicwall-TZ_210-5_9_0_4-127o.exp
+
+Example output:
+
+```
+python3 python/dumpwall.py -i sonicwall-TZ_210-5_9_0_4-127o.exp
 interface id '0' name 'X0' type 'Physical interface'
 interface id '1' name 'X1' type 'Physical interface'
 interface id '2' name 'X2' type 'Physical interface'
