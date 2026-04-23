@@ -1,8 +1,8 @@
 ## Introduction
 
-In these days ("these" starts yesterday and ends between when singularity comes and the end of the world) I'm planning to move from an old-fashion security model based on old Cisco devices to a new setup based on Sonicwall solution. The first difference between these two solutions (without additional software) is that Cisco can be managed using CLI and the configuration file is a list of instruction; if you manage configuration using a svn/git repository, you can evaluate the difference between configuration easily because they are text files. Sonicwall uses instead a web configuration that can be easier to manage (I'm not so sure because you need more steps to replicate a configuration) but less easy to compare because the configuration export file is a binary and cryptic file.
+This project converts SonicWall configuration export files into readable text output that can be versioned alongside the original `.exp` files in Git/SVN workflows.
 
-This dumpwall script will dump the configuration export file to a readable format (text, text expanded and html) that can be paired and saved with the original exp file on a git/svn repo. I'm working on this tool in my spare time and adding features when it is possible; the final target is to convert the whole export file but my experience is limited to the TZ2xx devices. If someone wants to help me, can send me a exp file of a different model with some screenshots of configuration pages.
+This repository is a maintained fork of the original project. It keeps the tool Python 3 compatible and improves documentation and packaging hygiene while preserving the original purpose: making binary SonicWall exports easier to diff and audit.
 
 ## Current supported commands
 
@@ -37,13 +37,17 @@ interface id '10' name 'X0:V100' type 'Virtual interface' vlan '100'
 
 ## Status
 
-This program is work in progress, I'm planning to switch to Cisco to Sonicwall and I'm writing 
-this utility to create a dump (HTML report and txt) of saved configuration that can be printed
-and compared with diff to obtain differences between versions.
+This program is a work in progress. The utility generates text-based dumps of saved configuration that can be printed and compared across versions using diff tools.
 
-I (and this software) am not associated, related or sponsored by Sonicwall or Dell. Use it at
-your own risk.
+This fork (and the original software) is not associated with, related to, or sponsored by SonicWall or Dell. Use it at your own risk.
 
 ## License
 
-Like all my hobby projects, this is Free Software covered by GPLv3 license.
+This project is Free Software covered by the GNU General Public License, version 3 or any later version (GPL-3.0-or-later).
+
+
+## GPL compliance notes
+
+- The full GPLv3 license text is provided in both `LICENSE` and `COPYING`.
+- Source files include an SPDX license identifier (`GPL-3.0-or-later`).
+- This repository distributes source code directly, satisfying GPL source-availability requirements for this project distribution.
